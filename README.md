@@ -1,32 +1,29 @@
-# sugarscanner
+# SucreCam (code‑barres + Open Food Facts)
 
-# SucreCam (Web AR)
+Scanner un code‑barres (EAN/UPC) ou un QR GS1 Digital Link, interroger Open Food Facts (OFF) pour récupérer le sucre, et afficher une pyramide de “morceaux de sucre” superposée à la caméra.
 
-Objectif: quand tu scannes un produit (auto-reconnaissance ou code‑barres), visualiser en surimpression caméra la quantité de sucre sous forme de pyramide de “morceaux”.
+Fonctionnement
+- Scan: ZXing JS (EAN‑8, EAN‑13, UPC‑A, QR).
+- Données: OFF v2 – `https://world.openfoodfacts.org/api/v2/product/{EAN}.json`.
+- Estimation sucre par unité:
+  1) `sugars_serving` (si présent),
+  2) sinon extrapolation depuis `sugars_100g` / `sugars_100ml` + `quantity` (ex: “330 ml”, “400 g”),
+  3) à défaut, affichage pour 100 g / 100 ml.
+- Visualisation: THREE.js en orthographique. 1 cube = 4 g (modifiable dans `js/utils.js` via `CUBE_GRAMS`).
+- Cache: `localStorage` 24 h par EAN.
 
-Fonctionnalités
-- Reco visuelle (MobileNet + matching) pour quelques références connues (fichiers dans assets/references).
-- Scan code‑barres (ZXing) EAN/UPC en continu.
-- Données sucres via OpenFoodFacts (OFF) si dispo, sinon base locale.
-- Visualisation cubes en Three.js ancrée sur la box du produit.
-- 1 morceau = 4 g (configurable dans js/utils.js).
+Déploiement Netlify
+1. Déposer ces fichiers dans un repo GitHub.
+2. Sur Netlify: New site from Git → Build command: (vide) / Publish directory: “.”.
+3. HTTPS fournit par Netlify → autorise `getUserMedia` (caméra).
 
-Déploiement (Netlify via GitHub)
-1. Crée un repo Git avec tous les fichiers à la racine.
-2. Push sur GitHub.
-3. Sur Netlify: “New site from Git”, connecte ton repo. Build command: (vide). Publish directory: “.”.
-4. Donne l’autorisation caméra au premier lancement (HTTPS obligatoire → Netlify fournit).
+Compatibilité
+- Android Chrome: OK (+ torche sur appareils compatibles).
+- iOS Safari (iOS 15+): OK (la torche n’est pas dispo partout).
+- Desktop: fonctionne avec webcam, mais l’usage optimal est mobile.
 
-Ajout de nouvelles références visuelles
-1. Ajoute une image nette du produit dans `assets/references/`.
-2. Ajoute une entrée dans `VISUAL_REFERENCES` (js/products.js) avec {id,name,ean,imagePath}.
-3. Optionnel: ajoute le code-barres et un fallback dans `LOCAL_PRODUCTS` (js/products.js) et `products.json`.
-
-Notes et limites
-- Reco visuelle: c’est un “matching d’apparence” léger pour démos. Pour une reco robuste multi‑angles, il faudrait un modèle personnalisé (TF.js/Teachable Machine) ou un backend.
-- OFF: la disponibilité des champs varie selon les produits. On estime par portion, par 100g ou par 100ml en priorité selon les données.
-- iOS: Safari supporte getUserMedia et fonctionnera. Le réglage de la torche n’est pas disponible sur tous les appareils.
-- Confidentialité: tout tourne côté client, sauf la requête OFF.
+Confidentialité
+- Tout tourne dans le navigateur; seules les requêtes OFF sortent du device.
 
 Licence
-- Exemple éducatif; images de référence: utilise des photos dont tu as les droits.
+- Projet d’exemple éducatif, sans garantie.
