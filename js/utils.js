@@ -1,54 +1,56 @@
-export const CUBE_GRAMS = 4; // 1 morceau de sucre = 4 g (FR). Modifiable.
+export const CUBE_GRAMS = 4;
 
-export function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
-
+// Convertit grammes de sucre → nombre de “morceaux”
 export function gramsToCubes(grams) {
-  if (!Number.isFinite(grams) || grams <= 0) return 0;
-  return Math.ceil(grams / CUBE_GRAMS);
+  return Math.max(0, Math.round(grams / CUBE_GRAMS));
 }
 
-export function makeBasisText({ per, quantity_g, quantity_ml, serving_g, serving_ml }) {
-  if (per === 'unit') return 'Base: estimation par unité (poids/volume net).';
-  if (per === 'serving') return 'Base: par portion (valeur OFF).';
-  if (per === '100g') return 'Base: extrapolation à partir de 100 g.';
-  if (per === '100ml') return 'Base: extrapolation à partir de 100 ml.';
-  return 'Base: inconnue';
+export function parseGS1DigitalLink(data) {
+  // Support basique de QR GS1 Digital Link: .../01/{gtin}[...] ou ?gtin=
+  try {
+    const url = new URL(data);
+    const p = url.pathname.split('/');
+    const idx = p.findIndex(x => x === '01');
+    if (idx >= 0 && p[idx+1]) return p[idx+1].replace(/\D/g, '').slice(0,14);
+    const gtin = url.searchParams.get('gtin');
+    if (gtin) return gtin.replace(/\D/g,'').slice(0,14);
+  } catch {}
+  return null;
 }
 
-export function nicePct(x){
-  if (!Number.isFinite(x)) return '—';
-  return (Math.round(x * 10) / 10).toLocaleString('fr-FR') + ' %';
+export function makeBasisText(est) {
+  if (!est) return '—';
+  if (est.basis === 'serving' && est.serving) return `par portion (${est.serving})`;
+  if (est.basis === 'unit' && est.qty) return `par unité (${est.qty})`;
+  if (est.basis === '100g') return 'pour 100 g (estimé par poids net)';
+  if (est.basis === '100ml') return 'pour 100 ml (estimé par volume net)';
+  return '—';
 }
 
-// Estime sucre par unité à partir des champs OFF
-export function estimateUnitSugar(nutri, quantityText) {
-  const g100 = nutri['sugars_100g'];
-  const ml100 = nutri['sugars_100ml'];
-  const serving = nutri['sugars_serving'];
-  const servingSizeTxt = nutri['serving_size'];
-
-  // Parsing quantité "330 ml", "400 g"
-  let qtyValue = null, qtyUnit = null;
-  if (quantityText && typeof quantityText === 'string') {
-    const m = quantityText.toLowerCase().match(/([\d,.]+)\s*(ml|l|g)/);
-    if (m) {
-      qtyValue = parseFloat(m[1].replace(',', '.'));
-      qtyUnit = m[2];
-      if (qtyUnit === 'l') { qtyUnit = 'ml'; qtyValue *= 1000; }
-    }
+// Estime le sucre par unité à partir des nutriments OFF
+export function estimateUnitSugar(nutriments, quantity) {
+  const n = nutriments || {};
+  if (Number.isFinite(n.sugars_serving)) {
+    return { grams: n.sugars_serving, basis:'serving', serving: n.serving_size || 'portion' };
   }
-
-  if (Number.isFinite(serving)) {
-    return { grams: serving, per: 'serving' };
+  const qty = (quantity || '').toLowerCase();
+  const m = qty.match(/([\d.,]+)\s*(g|kg|ml|l)/i);
+  let gramsNet = null, mlNet = null;
+  if (m) {
+    const val = parseFloat(m[1].replace(',', '.'));
+    const unit = m[2].toLowerCase();
+    if (unit === 'g') gramsNet = val;
+    if (unit === 'kg') gramsNet = val * 1000;
+    if (unit === 'ml') mlNet = val;
+    if (unit === 'l') mlNet = val * 1000;
   }
-  if (Number.isFinite(g100) && qtyUnit === 'g' && Number.isFinite(qtyValue)) {
-    return { grams: (g100 / 100) * qtyValue, per: '100g', quantity_g: qtyValue };
+  if (Number.isFinite(n.sugars_100g) && gramsNet) {
+    return { grams: n.sugars_100g * (gramsNet/100), basis:'unit', qty: `${gramsNet} g` };
   }
-  if (Number.isFinite(ml100) && qtyUnit === 'ml' && Number.isFinite(qtyValue)) {
-    return { grams: (ml100 / 100) * qtyValue, per: '100ml', quantity_ml: qtyValue };
+  if (Number.isFinite(n.sugars_100ml) && mlNet) {
+    return { grams: n.sugars_100ml * (mlNet/100), basis:'unit', qty: `${mlNet} ml` };
   }
-  // fallback: si g100 existe et on suppose 1 unité ~ 100 g/100 ml
-  if (Number.isFinite(g100)) return { grams: g100, per: '100g' };
-  if (Number.isFinite(ml100)) return { grams: ml100, per: '100ml' };
+  if (Number.isFinite(n.sugars_100g)) return { grams: n.sugars_100g, basis:'100g' };
+  if (Number.isFinite(n.sugars_100ml)) return { grams: n.sugars_100ml, basis:'100ml' };
   return null;
 }
