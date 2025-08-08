@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>SucreCam – AR sucre par produit</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="assets/icons/favicon.png" />
+  <!-- Librairies via CDN -->
+  <script defer src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@zxing/library@0.20.0/umd/index.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.21.0/dist/tf.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.0"></script>
+  <!-- Code app -->
+  <script defer src="js/utils.js"></script>
+  <script defer src="js/products.js"></script>
+  <script defer src="js/ar.js"></script>
+  <script defer src="js/detection.js"></script>
+  <script defer src="js/main.js"></script>
+</head>
+<body>
+  <main id="app">
+    <video id="camera" playsinline autoplay muted></video>
+    <canvas id="overlay"></canvas>
+
+    <section id="hud">
+      <div class="status">
+        <span id="status-badge">Initialisation…</span>
+        <span id="source-badge" class="secondary">—</span>
+      </div>
+      <div class="info">
+        <div class="line"><strong>Produit:</strong> <span id="product-name">—</span></div>
+        <div class="line"><strong>Sucres estimés:</strong> <span id="sugar-grams">—</span> g
+          (<span id="sugar-cubes">—</span> morceaux)
+        </div>
+        <div class="line small" id="basis-line">—</div>
+      </div>
+      <div class="controls">
+        <button id="toggle-mode" title="Basculer auto ↔ code-barres">Mode: Auto</button>
+        <button id="switch-camera" title="Caméra avant/arrière">Switch Cam</button>
+        <button id="toggle-torch" title="Activer torche" disabled>Torche</button>
+      </div>
+    </section>
+
+    <noscript>
+      Active JavaScript pour utiliser l’application.
+    </noscript>
+  </main>
+</body>
+</html>
