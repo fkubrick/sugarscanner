@@ -1,0 +1,12 @@
+{
+  "5449000000996": {
+    "name": "Coca‑Cola 33 cl",
+    "sugar_g_unit": 35,
+    "basis": { "per": "unit", "quantity_ml": 330 }
+  },
+  "3017620429484": {
+    "name": "Nutella 400 g",
+    "sugar_g_unit": 225,
+    "basis": { "per": "100g", "quantity_g": 400 }
+  }
+}
