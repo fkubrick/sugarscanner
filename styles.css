@@ -1,0 +1,30 @@
+:root {
+  --bg: #0b0b10;
+  --fg: #f4f6f8;
+  --accent: #1fbf75;
+  --secondary: #9aa3ad;
+  --danger: #ff4d4f;
+}
+* { box-sizing: border-box; }
+html,body,#app { margin:0; padding:0; width:100%; height:100%; background:var(--bg); color:var(--fg); font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;}
+#camera, #overlay { position: fixed; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+#overlay { pointer-events: none; }
+#hud {
+  position: fixed; left: 0; right: 0; bottom: 0;
+  padding: 12px 12px calc(env(safe-area-inset-bottom, 0) + 12px);
+  background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(6,6,8,0.35) 30%, rgba(6,6,8,0.75) 100%);
+}
+.status { display:flex; gap:10px; align-items:center; margin-bottom:6px; }
+#status-badge { background: #303442; padding:4px 8px; border-radius:6px; }
+#source-badge { color: var(--secondary); font-size: 12px; }
+.info .line { margin: 4px 0; }
+.info .small { color: var(--secondary); font-size: 12px; }
+.controls { margin-top: 8px; display:flex; gap:8px; }
+button {
+  appearance:none; border:none; border-radius: 10px; padding:10px 12px;
+  background:#222632; color:var(--fg); font-weight:600;
+}
+button:disabled { opacity:0.5 }
+#status-badge.ok { background: #1c6b44; }
+#status-badge.warn { background: #6b4a1c; }
+#status-badge.err { background: #6b1c1c; }
