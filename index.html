@@ -3,48 +3,34 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>SucreCam – AR sucre par produit</title>
+  <title>SucreCam – Scan code‑barres</title>
+  <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="%23000"/><g transform="translate(8,10)"><rect x="8" y="8" width="32" height="32" fill="%23fff" stroke="%23ccc"/><text x="24" y="30" text-anchor="middle" font-family="Arial" font-size="14" fill="%23000">S</text></g></svg>' />
   <link rel="stylesheet" href="styles.css" />
-  <link rel="icon" href="assets/icons/favicon.png" />
-  <!-- Librairies via CDN -->
+  <!-- Libs (CDN) -->
   <script defer src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/@zxing/library@0.20.0/umd/index.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.21.0/dist/tf.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.0"></script>
-  <!-- Code app -->
-  <script defer src="js/utils.js"></script>
-  <script defer src="js/products.js"></script>
-  <script defer src="js/ar.js"></script>
-  <script defer src="js/detection.js"></script>
-  <script defer src="js/main.js"></script>
+  <script type="module" defer src="js/main.js"></script>
 </head>
 <body>
-  <main id="app">
-    <video id="camera" playsinline autoplay muted></video>
+  <div id="app">
+    <video id="camera" playsinline muted autoplay></video>
     <canvas id="overlay"></canvas>
 
-    <section id="hud">
-      <div class="status">
-        <span id="status-badge">Initialisation…</span>
-        <span id="source-badge" class="secondary">—</span>
+    <div id="hud">
+      <div class="badges">
+        <span id="status-badge" class="badge">Initialisation…</span>
+        <span id="source-badge" class="badge">Code‑barres</span>
       </div>
-      <div class="info">
-        <div class="line"><strong>Produit:</strong> <span id="product-name">—</span></div>
-        <div class="line"><strong>Sucres estimés:</strong> <span id="sugar-grams">—</span> g
-          (<span id="sugar-cubes">—</span> morceaux)
-        </div>
-        <div class="line small" id="basis-line">—</div>
+      <div class="panel">
+        <div class="line"><strong id="product-name">—</strong></div>
+        <div class="line">Sucre: <span id="sugar-grams">—</span> g • <span id="sugar-cubes">—</span> morceaux</div>
+        <div class="line" id="basis-line">—</div>
       </div>
       <div class="controls">
-        <button id="toggle-mode" title="Basculer auto ↔ code-barres">Mode: Auto</button>
-        <button id="switch-camera" title="Caméra avant/arrière">Switch Cam</button>
-        <button id="toggle-torch" title="Activer torche" disabled>Torche</button>
+        <button id="switch-camera" title="Basculer entre caméras">Changer caméra</button>
+        <button id="toggle-torch" title="Activer la lampe" disabled>Torche</button>
       </div>
-    </section>
-
-    <noscript>
-      Active JavaScript pour utiliser l’application.
-    </noscript>
-  </main>
+    </div>
+  </div>
 </body>
 </html>
