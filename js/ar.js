@@ -21,8 +21,8 @@ export class SugarAR {
   }
 
   onResize() {
-    const w = this.overlayCanvas.clientWidth = window.innerWidth;
-    const h = this.overlayCanvas.clientHeight = window.innerHeight;
+    const w = this.overlayCanvas.width = window.innerWidth;
+    const h = this.overlayCanvas.height = window.innerHeight;
     this.renderer.setSize(w, h, false);
     if (this.camera) {
       this.camera.right = w;
