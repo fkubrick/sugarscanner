@@ -1,5 +1,5 @@
 import { BarcodeScanner } from './detection.js';
-import { fetchProductByCode, gramsToCubes, formatBasis, clamp, CUBE_GRAMS } from './utils.js';
+import { fetchProductByCode, gramsToCubes, formatBasis, clamp, CUBE_GRAMS, computeSugar } from './utils.js';
 import { SugarAR } from './ar.js';
 
 const els = {
@@ -12,6 +12,7 @@ const els = {
   basis: document.getElementById('basis-line'),
   switchCam: document.getElementById('switch-camera'),
   torchBtn: document.getElementById('toggle-torch'),
+  debug: document.getElementById('debug-output'),
 };
 
 const barcode = new BarcodeScanner(els.video);
@@ -64,9 +65,19 @@ async function loop() {
 }
 
 async function handleCode(codeText) {
+  els.debug.textContent = '';
   try {
     setStatus(`Code: ${codeText}`);
-    const { product, sugarG, sugarPer, basis } = await fetchProductByCode(codeText);
+    const data = await fetchProductByCode(codeText);
+    els.debug.textContent = JSON.stringify(data, null, 2);
+
+    if (data.status !== 1 || !data.product) {
+      throw new Error('Produit introuvable');
+    }
+
+    const product = data.product;
+    const { sugarG, sugarPer, basis } = computeSugar(product);
+
     els.name.textContent = product?.product_name || 'Produit';
     els.sugarG.textContent = sugarG?.toFixed(1) ?? '—';
     els.sugarC.textContent = gramsToCubes(sugarG).toString();
@@ -77,6 +88,9 @@ async function handleCode(codeText) {
   } catch (e) {
     console.error(e);
     setStatus('Introuvable ou erreur réseau', 'warn');
+    if (e.message.includes('OFF error')) {
+      els.debug.textContent = e.message;
+    }
   }
 }
 

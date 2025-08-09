@@ -44,7 +44,7 @@ function isBeverage(product) {
 }
 
 // Calcule sucre pour l’unité (boîte, bouteille…) et par 100 g/ml
-function computeSugar(product) {
+export function computeSugar(product) {
   const n = product?.nutriments || {};
   // OFF: valeurs possibles: sugars_serving, sugars_100g, sugars_100ml
   const sugarsServing = toNum(n.sugars_serving);
@@ -126,16 +126,25 @@ export function formatBasis(basis, sugarPer) {
 export async function fetchProductByCode(code) {
   if (!code) throw new Error('Code manquant');
 
-  // Cache simple 24 h
-  const cacheKey = `off:${code}`;
-  const cached = readCache(cacheKey, 24 * 60 * 60 * 1000);
-  if (cached) return cached;
+  // Cache simple 24 h (désactivé pour le debug)
+  // const cacheKey = `off:${code}`;
+  // const cached = readCache(cacheKey, 24 * 60 * 60 * 1000);
+  // if (cached) return cached;
 
   const url = `https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(code)}.json`;
-  const res = await fetch(url, { mode: 'cors' });
+  const res = await fetch(url, {
+    mode: 'cors',
+    headers: {
+      'User-Agent': 'SucreCam/1.0 (https://github.com/your-repo)' // Ajout User-Agent
+    }
+  });
   if (!res.ok) throw new Error('OFF error ' + res.status);
   const data = await res.json();
 
+  // Pour le debug, on renvoie tout
+  return data;
+
+  /*
   const status = data?.status;
   if (status !== 1 || !data?.product) {
     throw new Error('Produit introuvable');
@@ -145,8 +154,9 @@ export async function fetchProductByCode(code) {
   const { sugarG, sugarPer, basis } = computeSugar(product);
 
   const result = { product, sugarG, sugarPer, basis };
-  writeCache(cacheKey, result);
+  // writeCache(cacheKey, result);
   return result;
+  */
 }
 
 // Cache localStorage

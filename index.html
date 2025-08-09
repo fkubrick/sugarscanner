@@ -7,7 +7,6 @@
   <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="%23000"/><g transform="translate(8,10)"><rect x="8" y="8" width="32" height="32" fill="%23fff" stroke="%23ccc"/><text x="24" y="30" text-anchor="middle" font-family="Arial" font-size="14" fill="%23000">S</text></g></svg>' />
   <link rel="stylesheet" href="styles.css" />
   <!-- Libs (CDN) -->
-  <script defer src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/@zxing/library@0.20.0/umd/index.min.js"></script>
   <script type="module" defer src="js/main.js"></script>
 </head>
@@ -31,6 +30,7 @@
         <button id="toggle-torch" title="Activer la lampe" disabled>Torche</button>
       </div>
     </div>
+    <pre id="debug-output" style="position: absolute; top: 0; left: 0; right: 0; background: rgba(0,0,0,0.8); color: white; padding: 10px; z-index: 100;"></pre>
   </div>
 </body>
 </html>
